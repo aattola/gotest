@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/aattola/gootitus/routes/kissa"
+	"github.com/aattola/gotest/routes/kissa"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"

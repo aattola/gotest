@@ -1,4 +1,4 @@
-module github.com/aattola/gootitus
+module github.com/aattola/gotest
 
 go 1.21
 
