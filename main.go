@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/aattola/gotest/routes/fetch"
 	"github.com/aattola/gotest/routes/kissa"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/sqlite"
@@ -25,6 +26,9 @@ func main() {
 
 	kissaGroup := app.Group("kissa")
 	kissa.HandleKissa(kissaGroup, *db)
+
+	fetchGroup := app.Group("fetch")
+	fetchRouteHandler.HandleFetchRoutes(fetchGroup, *db)
 
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		argument := ctx.Query("kissa", "false")

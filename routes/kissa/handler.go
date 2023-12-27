@@ -1,7 +1,9 @@
 package kissa
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/mattn/go-sqlite3"
 	"gorm.io/gorm"
 )
 
@@ -30,9 +32,56 @@ func HandleKissa(r fiber.Router, db gorm.DB) error {
 			ID:    "123",
 		}
 
+		tx := db.Create(&uusiKissa)
+
+		if tx.Error != nil {
+
+			fmt.Println(tx.Error)
+			sqliteErr := tx.Error.(sqlite3.Error)
+			switch sqliteErr.Code {
+			case 19:
+				return ctx.JSON(&fiber.Map{
+					"error": "a table constraint (NOT NULL, UNIQUE, etc.) was violated during the operation (INSERT, etc.)",
+				})
+			}
+
+			return ctx.JSON(&fiber.Map{
+				"error": tx.Error,
+				"err":   tx.Error.Error(),
+			})
+		}
+
+		return ctx.JSON(&uusiKissa)
+	})
+
+	r.Get("/luo/autoid", func(ctx *fiber.Ctx) error {
+
+		uusiKissa := &KissaModel{
+			Nimi:  "Kass",
+			Hinta: 22,
+		}
+
 		db.Create(&uusiKissa)
 
 		return ctx.JSON(&uusiKissa)
+	})
+
+	r.Get("/hae/:id", func(ctx *fiber.Ctx) error {
+
+		id := ctx.Params("id")
+
+		var kissa KissaModel
+
+		tx := db.First(&kissa, id)
+
+		if tx.Error != nil {
+			return ctx.JSON(&fiber.Map{
+				"error": tx.Error,
+				"err":   tx.Error.Error(),
+			})
+		}
+
+		return ctx.JSON(&kissa)
 	})
 
 	return nil
